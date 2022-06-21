@@ -1,0 +1,5 @@
+#!/bin/env bash
+
+terraform output -raw private_key > private.key
+chmod 0600 private.key
+ssh -i private.key ec2-user@$(terraform output -raw management_ip) "${@}"

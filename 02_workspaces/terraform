@@ -1,0 +1,11 @@
+#!/bin/env bash
+
+command=$1
+suffix=""
+if [ "$command" == "plan" ] || [ "$command" == "apply" ] || [ "$command" == "destroy" ]; then
+  suffix="-var-file ../config.tfvars"
+  directory_id=$(cd ../01_dependencies; terraform output -raw directory_id)
+  suffix="${suffix} -var directory_id=${directory_id}"
+fi
+
+terraform "${@}" ${suffix}

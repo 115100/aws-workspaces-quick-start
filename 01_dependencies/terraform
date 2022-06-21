@@ -1,0 +1,9 @@
+#!/bin/env bash
+
+command=$1
+suffix=""
+if [ "$command" == "plan" ] || [ "$command" == "apply" ] || [ "$command" == "destroy" ]; then
+  suffix="-var-file ../config.tfvars"
+fi
+
+terraform "${@}" ${suffix}
