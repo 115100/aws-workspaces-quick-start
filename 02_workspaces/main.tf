@@ -23,18 +23,28 @@ variable "directory_id" {
   type = string
 }
 
+variable "encrypt_volumes" {
+  type = bool
+  default = true
+}
+
+variable "compute_type" {
+  type = string
+  default = "VALUE"
+}
+
 resource "aws_workspaces_workspace" "workspace" {
   for_each     = toset(var.users)
   directory_id = var.directory_id
   user_name    = each.value
   bundle_id    = var.bundle_id
 
-  root_volume_encryption_enabled = true
-  user_volume_encryption_enabled = true
-  volume_encryption_key          = "alias/aws/workspaces"
+  root_volume_encryption_enabled = var.encrypt_volumes
+  user_volume_encryption_enabled = var.encrypt_volumes
+  volume_encryption_key          = var.encrypt_volumes ? "alias/aws/workspaces" : null
 
   workspace_properties {
-    compute_type_name                         = "VALUE"
+    compute_type_name                         = var.compute_type
     user_volume_size_gib                      = 10
     root_volume_size_gib                      = 80
     running_mode                              = "AUTO_STOP"
