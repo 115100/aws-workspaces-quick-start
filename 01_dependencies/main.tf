@@ -71,6 +71,8 @@ resource "aws_workspaces_directory" "directory" {
   }
 
   tags = local.tags
+
+  depends_on = [aws_iam_role.workspace_default]
 }
 
 module "vpc" {
