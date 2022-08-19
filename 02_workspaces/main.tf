@@ -16,7 +16,6 @@ variable "users" {
 
 variable "bundle_id" {
   type    = string
-  default = "wsb-clj85qzj1"
 }
 
 variable "directory_id" {
