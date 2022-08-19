@@ -50,49 +50,43 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
+resource "aws_security_group_rule" "management_ssh_ipv4" {
+  count             = local.provisioner_cidr_ipv4 == null ? 0 : 1
+  security_group_id = aws_security_group.management.id
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  type              = "ingress"
+  cidr_blocks       = [ local.provisioner_cidr_ipv4 ]
+}
+
+resource "aws_security_group_rule" "management_ssh_ipv6" {
+  count             = local.provisioner_cidr_ipv6 == null ? 0 : 1
+  security_group_id = aws_security_group.management.id
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  type              = "ingress"
+  ipv6_cidr_blocks = [ local.provisioner_cidr_ipv6 ]
+}
+
+resource "aws_security_group_rule" "management_egress" {
+  security_group_id = aws_security_group.management.id
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  type              = "egress"
+  cidr_blocks       = [ "0.0.0.0/0" ]
+}
+
 resource "aws_security_group" "management" {
   vpc_id = local.vpc_id
-
-  ingress {
-    from_port = 3389
-    to_port   = 3389
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  ingress {
-    from_port = 389
-    to_port   = 389
-    protocol  = "tcp"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [local.provisoner_ip_cidr]
-  }
-
-  egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-
-    cidr_blocks = [
-      "0.0.0.0/0",
-    ]
-  }
 }
 
 locals {
-  provisoner_ip_cidr = "${chomp(data.http.provisoner_ip.body)}/32"
+  provisioner_ip = chomp(data.http.provisoner_ip.body)
+  provisioner_cidr_ipv4 = can(cidrnetmask("${local.provisioner_ip}/32")) ? "${local.provisioner_ip}/32" : null
+  provisioner_cidr_ipv6 = !can(cidrnetmask("${local.provisioner_ip}/32")) ? "${local.provisioner_ip}/128" : null
 }
 
 data "http" "provisoner_ip" {
