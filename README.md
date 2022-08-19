@@ -18,10 +18,12 @@ variables. You can run with the following.
 
 ```shell
 cd 01_dependencies
+./terraform init
 ./terraform apply
 # take note of the output named registration_code
 # wait until users have been created or create manually, see "creating users" section below
 cd 02_workspaces
+./terraform init
 ./terraform apply
 ```
 wrapper scripts pass through any flags provided after the command, i.e. you can suffix `-auto-approve` or similar
