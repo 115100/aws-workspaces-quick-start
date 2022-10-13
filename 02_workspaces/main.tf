@@ -28,8 +28,8 @@ variable "encrypt_volumes" {
 }
 
 variable "compute_type" {
-  type = string
-  default = "VALUE"
+  type    = string
+  default = "STANDARD"
 }
 
 resource "aws_workspaces_workspace" "workspace" {
